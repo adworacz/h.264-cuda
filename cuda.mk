@@ -228,13 +228,8 @@ endif
 # Add cudacc flags
 NVCCFLAGS += $(CUDACCFLAGS)
 
-# workaround for mac os x cuda 1.1 compiler issues
-ifneq ($(DARWIN),)
-	NVCCFLAGS += --host-compilation=C
-endif
 
 # Add common flags
-NVCCFLAGS += --host-compilation=c
 NVCCFLAGS += $(COMMONFLAGS)
 CUDACFLAGS    += $(COMMONFLAGS)
 
