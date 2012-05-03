@@ -70,6 +70,18 @@ ASFLAGS=""
 
 EXE=""
 
+# check whether 'echo -n' works as expected, otherwise try printf
+if [ "x`echo -n houba`" = xhouba ]
+then
+  ECHON="echo -n"
+elif [ "x`printf houba`" = xhouba ]
+then
+  ECHON="printf"
+else
+  echo "Neither 'echo -n' nor 'printf' are working with your shell!"
+  exit 1
+fi
+
 # parse options
 
 for opt do
@@ -418,7 +430,14 @@ EXE=$EXE
 VIS=$vis
 HAVE_GETOPT_LONG=$HAVE_GETOPT_LONG
 DEVNULL=$DEVNULL
+ECHON=$ECHON
 EOF
+
+$ECHON 'CONFIGURE_ARGS=' >> config.mak
+for A in "$@" ; do
+    $ECHON " '$A'" >> config.mak
+done
+echo '' >> config.mak
 
 if [ "$shared" = "yes" ]; then
     API=$(grep '#define X264_BUILD' < x264.h | cut -f 3 -d ' ')

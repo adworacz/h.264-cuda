@@ -11,11 +11,11 @@ SRCS = common/mc.c common/predict.c common/pixel.c common/macroblock.c \
        encoder/analyse.c encoder/me.c encoder/ratecontrol.c \
        encoder/set.c encoder/macroblock.c encoder/cabac.c \
        encoder/cavlc.c encoder/encoder.c \
-       encoder/pyramid/gold/gold.c encoder/pyramid/gold/tests.c encoder/pyramid/pyramidRunner.c   encoder/pyramid/gold/gold2.c
+       encoder/pyramid/gold/gold.c encoder/pyramid/gold/tests.c encoder/pyramid/pyramidRunner.c encoder/pyramid/gold/gold2.c
 
 SRCCLI = x264.c matroska.c muxers.c
 
-#Open GL Debugger for cude
+#Open GL Debugger for cuda
 OPENGL		:= 0
 
 ifeq (OPENGL,1)
@@ -29,7 +29,6 @@ endif
 
 # Cuda source files (compiled with nvcc)
 CUFILES		:= encoder/pyramid/cuda/cuda-me.cu 
-#encoder/hi-cuda-me.cu encoder/hier.cu
 
 ifeq (OPENGL,1)
 CUFILES		+= encoder/glDebug.cu
