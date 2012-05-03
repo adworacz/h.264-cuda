@@ -8,7 +8,7 @@
 #ifndef GOLD_H_
 #define GOLD_H_
 
-
+#undef sqrtf
 #include <math.h>
 #include <stdlib.h>
 
