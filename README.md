@@ -1,5 +1,5 @@
 X264 CUDA
-=========
+---------
 
 The primary focus of this project is to revitalize and improve the work done by
 Alex Rothberg and Lawrence Chan in the original h.264-cuda project.
