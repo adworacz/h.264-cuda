@@ -228,7 +228,6 @@ endif
 # Add cudacc flags
 NVCCFLAGS += $(CUDACCFLAGS)
 
-
 # Add common flags
 NVCCFLAGS += $(COMMONFLAGS)
 CUDACFLAGS    += $(COMMONFLAGS)
