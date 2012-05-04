@@ -7,7 +7,7 @@
 #.SUFFIXES : .cu .cu_dbg.o .c_dbg.o .cpp_dbg.o .cu_rel.o .c_rel.o .cpp_rel.o .cubin
 
 # Add new SM Versions here as devices with new Compute Capability are released
-SM_VERSIONS := sm_10 sm_11 sm_12 sm_13
+SM_VERSIONS := sm_10 sm_11 sm_12 sm_13 sm_20
 
 CUDA_INSTALL_PATH ?= /usr/local/cuda
 
@@ -15,17 +15,21 @@ ifdef cuda-install
 	CUDA_INSTALL_PATH := $(cuda-install)
 endif
 
-CUDA_SDK_PATH ?= /home/$(USER)/NVIDIA_CUDA_SDK
-
-ifdef cuda-sdk
-	CUDA_SDK_PATH := $(cuda-sdk)
-endif
-
 # detect OS
 OSUPPER = $(shell uname -s 2>/dev/null | tr [:lower:] [:upper:])
 OSLOWER = $(shell uname -s 2>/dev/null | tr [:upper:] [:lower:])
 # 'linux' is output for Linux system, 'darwin' for OS X
 DARWIN = $(strip $(findstring DARWIN, $(OSUPPER)))
+
+ifdef DARWIN
+	CUDA_SDK_PATH ?= /Developer/GPU\ Computing
+else
+	CUDA_SDK_PATH ?= /home/$(USER)/NVIDIA_CUDA_SDK
+endif
+
+ifdef cuda-sdk
+	CUDA_SDK_PATH := $(cuda-sdk)
+endif
 
 # Basic directory setup for SDK
 # (override directories only if they are not already defined)
@@ -37,8 +41,8 @@ BINDIR     ?= $(ROOTBINDIR)
 #/$(OSLOWER)
 ROOTOBJDIR ?= .
 #obj
-LIBDIR     := $(CUDA_SDK_PATH)/lib
-COMMONDIR  := $(CUDA_SDK_PATH)/common
+LIBDIR     := $(CUDA_SDK_PATH)/C/lib
+COMMONDIR  := $(CUDA_SDK_PATH)/C/common
 
 # Compilers
 NVCC       := $(CUDA_INSTALL_PATH)/bin/nvcc 

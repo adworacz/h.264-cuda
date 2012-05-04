@@ -1,6 +1,6 @@
-#ifdef __CUDACC__
-extern "C"{
-#endif
+// #ifdef __CUDACC__
+// extern "C"{
+// #endif
 
 #include "common/common.h"
 
@@ -31,7 +31,7 @@ void runCuda(uint8_t *current,  uint8_t *ref, int strideCur, int strideRef, int 
 //This is the new and more efficient implementation. It saves device/host copies.
 void runCudaA(uint8_t *current,  uint8_t *ref, int strideCur, int strideRef, int width, int height,  int2** mvOut, int A,int2  *mvsX);
 
-void cuda_me(x264_t *h, int** mvX, int** mvY){
+extern "C" void cuda_me(x264_t *h, int** mvX, int** mvY){
 	int *mvsXD, *mvsYD;
     int bw = (h->fenc->i_width[0] + 15)/16;
     int bh = (h->fenc->i_lines[0] + 15)/16;
@@ -47,7 +47,7 @@ void cuda_me(x264_t *h, int** mvX, int** mvY){
 	cutilSafeCall(cudaFree(mvsYD));
 }
 
-void cuda_me2(x264_t *h, int** mvX, int** mvY){
+extern "C" void cuda_me2(x264_t *h, int** mvX, int** mvY){
 	currentTex.addressMode[0] = cudaAddressModeClamp;
 	lastTex.addressMode[0] = cudaAddressModeClamp;
 
@@ -442,6 +442,6 @@ __global__ void minSADa(unsigned bw, unsigned bwUp, int2* inMV, int2* outMV){
 
 
 
-#ifdef __CUDACC__
-}
-#endif
+// #ifdef __CUDACC__
+// }
+// #endif
