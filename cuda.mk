@@ -18,13 +18,11 @@ endif
 # detect OS
 OSUPPER = $(shell uname -s 2>/dev/null | tr [:lower:] [:upper:])
 OSLOWER = $(shell uname -s 2>/dev/null | tr [:upper:] [:lower:])
-# 'linux' is output for Linux system, 'darwin' for OS X
-DARWIN = $(strip $(findstring DARWIN, $(OSUPPER)))
 
-ifdef DARWIN
+ifeq ($(SYS), MACOSX)
 	CUDA_SDK_PATH ?= /Developer/GPU\ Computing
 else
-	CUDA_SDK_PATH ?= /home/$(USER)/NVIDIA_CUDA_SDK
+	CUDA_SDK_PATH ?= /opt/NVIDIA_GPU_Computing_SDK
 endif
 
 ifdef cuda-sdk
@@ -34,13 +32,9 @@ endif
 # Basic directory setup for SDK
 # (override directories only if they are not already defined)
 SRCDIR     ?= 
-#ROOTDIR    ?= .
 ROOTBINDIR ?= .
-#$(ROOTDIR)/bin
 BINDIR     ?= $(ROOTBINDIR)
-#/$(OSLOWER)
 ROOTOBJDIR ?= .
-#obj
 LIBDIR     := $(CUDA_SDK_PATH)/C/lib
 COMMONDIR  := $(CUDA_SDK_PATH)/C/common
 
@@ -54,7 +48,7 @@ INCLUDES  += -I. -I$(CUDA_INSTALL_PATH)/include  -I$(COMMONDIR)/inc
 #-I$(COMMONDIR)/inc
 
 # architecture flag for cubin build
-CUBIN_ARCH_FLAG := -m32
+#CUBIN_ARCH_FLAG := -m32
 
 # Warning flags
 CXXWARN_FLAGS := \
@@ -106,21 +100,15 @@ endif
 # append optional arch/SM version flags (such as -arch sm_11)
 #NVCCFLAGS += $(SMVERSIONFLAGS)
 
-# architecture flag for cubin build
-CUBIN_ARCH_FLAG := -m32
-
-# detect if 32 bit or 64 bit system
-HP_64 =	$(shell uname -m | grep 64)
-
 # OpenGL is used or not (if it is used, then it is necessary to include GLEW)
 ifeq ($(USEGLLIB),1)
 
-	ifneq ($(DARWIN),)
+	ifeq ($(SYS), MACOSX)
 		OPENGLLIB := -L/System/Library/Frameworks/OpenGL.framework/Libraries -lGL -lGLU $(COMMONDIR)/lib/$(OSLOWER)/libGLEW.a
 	else
 		OPENGLLIB := -lGL -lGLU -lX11 -lXi -lXmu
 
-		ifeq "$(strip $(HP_64))" ""
+		ifeq ($(ARCH),X86)
 			OPENGLLIB += -lGLEW -L/usr/X11R6/lib
 		else
 			OPENGLLIB += -lGLEW_x86_64 -L/usr/X11R6/lib64
@@ -131,7 +119,7 @@ ifeq ($(USEGLLIB),1)
 endif
 
 ifeq ($(USEGLUT),1)
-	ifneq ($(DARWIN),)
+	ifneq ($(SYS),MACOSX)
 		OPENGLLIB += -framework GLUT
 	else
 		OPENGLLIB += -lglut
@@ -148,7 +136,7 @@ endif
 
 
 ifeq ($(USECUDPP), 1)
-	ifeq "$(strip $(HP_64))" ""
+	ifeq ($(ARCH),X86)
 		CUDPPLIB := -lcudpp
 	else
 		CUDPPLIB := -lcudpp64
@@ -162,14 +150,21 @@ ifeq ($(USECUDPP), 1)
 endif
 
 # Libs
-LIB       := -L$(CUDA_INSTALL_PATH)/lib -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER) 
-CUDALFFLAGS := -L$(CUDA_INSTALL_PATH)/lib -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER) 
-ifeq ($(USEDRVAPI),1)
-   LIB += -lcuda  $(CUDPPLIB)
-   CUDALFFLAGS += -lcuda $(CUDPPLIB) ${OPENGLLIB} $(PARAMGLLIB) $(RENDERCHECKGLLIB)
+
+ifeq ($(ARCH),X86)
+	LIB         := -L$(CUDA_INSTALL_PATH)/lib -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER) 
+	CUDALFFLAGS := -L$(CUDA_INSTALL_PATH)/lib -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER)
 else
-   LIB += -lcudart $(CUDPPLIB)
-   CUDALFFLAGS += -lcudart $(CUDPPLIB) ${OPENGLLIB} $(PARAMGLLIB) $(RENDERCHECKGLLIB)
+	LIB         := -L$(CUDA_INSTALL_PATH)/lib64 -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER) 
+	CUDALFFLAGS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER)
+endif
+
+ifeq ($(USEDRVAPI),1)
+   LIB            += -lcuda  $(CUDPPLIB)
+   CUDALFFLAGS    += -lcuda $(CUDPPLIB) ${OPENGLLIB} $(PARAMGLLIB) $(RENDERCHECKGLLIB)
+else
+   LIB            += -lcudart $(CUDPPLIB)
+   CUDALFFLAGS    += -lcudart $(CUDPPLIB) ${OPENGLLIB} $(PARAMGLLIB) $(RENDERCHECKGLLIB)
 endif
 
 ifeq ($(USECUFFT),1)
@@ -233,8 +228,8 @@ endif
 NVCCFLAGS += $(CUDACCFLAGS)
 
 # Add common flags
-NVCCFLAGS += $(COMMONFLAGS)
-CUDACFLAGS    += $(COMMONFLAGS)
+NVCCFLAGS      += $(COMMONFLAGS)
+CUDACFLAGS     += $(COMMONFLAGS)
 
 ifeq ($(nvcc_warn_verbose),1)
 	NVCCFLAGS += $(addprefix --compiler-options ,$(CXXWARN_FLAGS)) 
