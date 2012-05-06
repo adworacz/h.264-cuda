@@ -1196,10 +1196,7 @@ static void x264_slice_write( x264_t *h )
     }
 
 	int q;
-	int* mvX=NULL, *mvY=NULL;
 	int* mvX2=NULL, *mvY2=NULL;
-	int* mvX3=NULL, *mvY3=NULL;
-	int* mvX4=NULL, *mvY4=NULL;
 
 	if(RUN_CUDA && h->i_frame >0){
 		 if(h->i_ref0>0){
@@ -1276,7 +1273,7 @@ static void x264_slice_write( x264_t *h )
 
 #if VISUALIZE
         //Replace theirs with ours for visualization purposes. mvX2 might need to be changed, depending on source.
-        if(mvX != NULL && mvY != NULL){
+        if(mvX2 != NULL && mvY2 != NULL){
 			h->mb.cache.mv[0][X264_SCAN8_0][0] = mvX2[mb_xy]<<2;
 			h->mb.cache.mv[0][X264_SCAN8_0][1] = mvY2[mb_xy]<<2;
         }
