@@ -40,7 +40,7 @@
 #include "pyramid/cuda/cuda-me.h"
 #include "pyramid/gold/tests.h"
 #define UNIT_TESTS 0
-#define RUN_CUDA 0
+#define RUN_CUDA 1
 
 //#define DEBUG_MB_TYPE
 
@@ -1204,9 +1204,9 @@ static void x264_slice_write( x264_t *h )
 	if(RUN_CUDA && h->i_frame >0){
 		 if(h->i_ref0>0){
 
-			cuResetTimer();
-			goldMVs2(h, &mvX, &mvY, 8, 2);
-			float goldTime=cuGetTimer();
+			// cuResetTimer();
+			// goldMVs2(h, &mvX, &mvY, 8, 2);
+			// float goldTime=cuGetTimer();
 
 			//goldMVs(h, &mvX3, &mvY3, 8, 2);
 			//goldMVs2(h, &mvX4, &mvY4, 8, 2);
@@ -1217,7 +1217,8 @@ static void x264_slice_write( x264_t *h )
 			cuda_me2(h, &mvX2, &mvY2);
 			float cudaTime=cuGetTimer();
 
-			printf("CUDA =%.1f ms\nGold=%.1f ms\n",cudaTime, goldTime);
+			// printf("CUDA =%.1f ms\nGold=%.1f ms\n",cudaTime, goldTime);
+            printf("CUDA =%.1f ms\n",cudaTime);
 
 		 }
 	}
@@ -1342,6 +1343,7 @@ static void x264_slice_write( x264_t *h )
         }
     }*/
 
+    /*
     if(mvX != NULL && mvY != NULL && mvX2 != NULL && mvY2 != NULL){
 		for(q =0 ;q<h->sh.i_last_mb*16;q+=16 ){
 			if(h->mb.mv[0][q][0]!=0 || h->mb.mv[0][q][1]!=0 || (mvX)[q>>4]!=0 || (mvY)[q>>4] !=0|| (mvX2)[q>>4]!=0 || (mvY2)[q>>4] !=0){
@@ -1351,7 +1353,7 @@ static void x264_slice_write( x264_t *h )
 				//assert(mvX[q>>4]== mvX4[q>>4] && mvY[q>>4]==mvY4[q>>4]);
 			}
 		}
-    }
+    } */
 
    /* if(mvX3 != NULL && mvY3 != NULL && mvX4 != NULL && mvY4 != NULL){
 		for(q =0 ;q<h->sh.i_last_mb*16;q+=16 ){

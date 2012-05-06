@@ -89,7 +89,7 @@ ifeq ($(dbg),1)
 	#debug
 	LIBSUFFIX   := D	
 else 
-	##COMMONFLAGS += -O3 
+	# COMMONFLAGS += -O4
 	BINSUBDIR   := .
 	#release
 	LIBSUFFIX   :=
